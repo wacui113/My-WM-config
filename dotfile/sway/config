@@ -1,0 +1,77 @@
+set $mod Mod4
+set $term foot
+set $menu dmenu_path | wmenu | xargs swaymsg exec --
+
+output * bg ~/Pictures/macos.jpg fill
+exec_always dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+exec_always --no-startup-id ~/.config/sway/env.d/00-fcitx5.sh
+
+# Key bindings
+bindsym $mod+Return exec $term
+bindsym $mod+Shift+q kill
+bindsym $mod+d exec $menu
+floating_modifier $mod normal
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+e exit
+
+# Window focus/move
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+
+# Splash workspaces
+bindsym $mod+1 workspace number 1
+# tương tự 2-0
+#bindsym $mod+2 workspace number 1
+
+# Layouts
+bindsym $mod+b splith
+bindsym $mod+v splitv
+bindsym $mod+e layout toggle split
+bindsym $mod+f fullscreen
+bindsym $mod+Shift+space floating toggle
+bindsym $mod+space focus mode_toggle
+
+bindsym $mod+r mode "resize"
+mode "resize" {
+    bindsym h resize shrink width 10px
+    bindsym j resize grow height 10px
+    bindsym k resize shrink height 10px
+    bindsym l resize grow width 10px
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+bar {
+    status_command waybar
+    colors {
+        statusline #ffffff
+        background #323232
+    }
+}
+
+include /etc/sway/config.d/*
+
+# Monitor arrangement (tùy output tên đúng)
+exec swaymsg output DP-1 position 0 0
+exec swaymsg output HDMI-A-1 position 1920 0
+
+# Audio control
+bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
+bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
+bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
+
+# Screenshot
+bindsym $mod+Shift+s exec grim -g "$(slurp)" - | swappy -f -
+
+# Lockscreen
+#bindsym $mod+Shift+backslash exec ~/.config/sway/scripts/lock_and_dpms.sh
+#exec swayidle -w \
+    #timeout 900 '~/.config/sway/scripts/lock_and_dpms.sh' \
+    #resume 'swaymsg "output * dpms on"'
+
